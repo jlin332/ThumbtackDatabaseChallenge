@@ -21,6 +21,14 @@ public class Database {
         map.remove(name);
     }
 
+    public Map<String, Integer> setMap(Map<String, Integer> map) {
+        HashMap<String, Integer> copy = new HashMap<>();
+        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+            copy.put(entry.getKey(), entry.getValue());
+        }
+        return copy;
+    }
+
     public int numEqualTo(int value) {
         Collection<Integer> list = map.values();
         int size = 0;

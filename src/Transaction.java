@@ -1,24 +1,25 @@
+import java.util.HashMap;
 import java.util.Map;
 
 public class Transaction {
-    Map<String, Integer> originalMap;
-    Map<String, Integer> newMap;
-    Database data;
-    Transaction withinTransaction;
+    private Map<String, Integer> originalMap = null;
+    protected Database data;
 
     public Transaction(Database data) {
         this.data = data;
+        mapclone();
     }
 
-    public void begin(Map<String, Integer> map) {
-        originalMap = map;
+    private void mapclone() {
+        originalMap = (HashMap<String, Integer>) ((HashMap<String, Integer>)data.map).clone();
     }
 
-    public Map<String, Integer> rollback() {
-        return originalMap;
+    public Database rollback() {
+        data.setMap(originalMap);
+        return data;
     }
 
-    public void commit() {
-        originalMap = newMap;
+    public Database commit() {
+        return data;
     }
 }

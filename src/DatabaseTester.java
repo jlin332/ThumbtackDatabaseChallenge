@@ -1,44 +1,78 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Scanner;
 
 public class DatabaseTester {
+
     public static void main(String[] args) {
-        Scanner scan = new Scanner("database.txt");
-        Map<String, Integer> map = new HashMap<>();
-        Database base = new Database(map);
-        while(scan.nextLine() != null) {
-            String line = scan.next();
-            String[] separated = line.split(" ");
-            String first = separated[0];
-            if (separated.length == 1) {
-                if (first == "BEGIN") {
-                    //Start of a Transaction
-                } else if (first == "END") {
-                    //End of a Transaction
-                } else if (first == "COMMIT") {
-                    //Commit Transaction
-                } else if (first == "ROLLBACK") {
-                    //Rollback Transaction
+        try {
+            File file = new File("src/database.txt");
+            Scanner scan = new Scanner(file);
+            Map<String, Integer> map = new HashMap<>();
+            LinkedList<Transaction> linkedList = new LinkedList<>();
+            while (scan.hasNextLine()) {
+                String line = scan.nextLine();
+                String[] separated = line.split(" ");
+                String first = separated[0].trim();
+                if (separated.length == 1) {
+                    if (first.equals("BEGIN")) {
+                        //Start of a Transaction
+                        linkedList.add(new Transaction(new Database(map)));
+                    } else if (first.equals("END")) {
+                        //End of a Transaction
+                        linkedList.pollLast();
+                    } else if (first.equals("COMMIT")) {
+                        //Commit Transaction
+                        if (linkedList.size() == 0) {
+                            System.out.println("NO TRANSACTION");
+                        } else {
+                            Transaction trans = linkedList.peekLast();
+                            trans.commit();
+                            System.out.println(" ");
+                        }
+                    } else if (first.equals("ROLLBACK")) {
+                        //Rollback Transaction
+                        if (linkedList.size() == 0) {
+                            System.out.println("NO TRANSACTION");
+                        } else {
+                            Transaction trans = linkedList.pollLast();
+                            Database test = trans.rollback();
+                            System.out.println(test.get("a"));
+                        }
+                    }
+                } else if (first.equals("SET")) {
+                    String name = separated[1];
+                    String value = separated[2];
+                    Transaction trans = linkedList.peekLast();
+                    trans.data.set(name, Integer.valueOf(value));
+                    System.out.println(" ");
+                } else if (first.equals("GET")) {
+                    String name = separated[1];
+                    if (linkedList.peekLast() == null) {
+                        System.out.println("NULL");
+                    } else {
+                        Transaction trans = linkedList.peekLast();
+                        int result = trans.data.get(name);
+                        System.out.println(result);
+                    }
+                } else if (first.equals("UNSET")) {
+                    String name = separated[1];
+                    Transaction trans = linkedList.peekLast();
+                    trans.data.unset(name);
+                    System.out.println(" ");
+                } else if (first.equals("NUMEQUALTO")) {
+                    String value = separated[1];
+                    int val = Integer.getInteger(value);
+                    Transaction trans = linkedList.peekLast();
+                    int result = trans.data.numEqualTo(val);
+                    System.out.println(result);
                 }
-            } else if (first == "SET") {
-                String name = separated[1];
-                String value = separated[2];
-                base.set(name, Integer.valueOf(value));
-                System.out.println(" ");
-            } else if (first == "GET") {
-                String name = separated[1];
-                int result = base.get(name);
-                System.out.println(result);
-            } else if (first == "UNSET") {
-                String name = separated[1];
-                System.out.println(" ");
-            } else if (first == "NUMEQUALTO") {
-                String value = separated[1];
-                int val = Integer.getInteger(value);
-                int result = base.numEqualTo(val);
-                System.out.println(result);
             }
+        } catch (FileNotFoundException ex) {
+            System.out.println("File Not Found");
         }
     }
 }

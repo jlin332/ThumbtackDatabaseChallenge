@@ -1,10 +1,10 @@
-import java.util.HashMap;
 import java.util.Map;
 
 public class Transaction {
     Map<String, Integer> originalMap;
     Map<String, Integer> newMap;
     Database data;
+    Transaction withinTransaction;
 
     public Transaction(Database data) {
         this.data = data;

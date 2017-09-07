@@ -7,11 +7,12 @@ import java.util.Scanner;
 
 public class DatabaseTester {
 
+    private static HashMap<String, Integer> map;
     public static void main(String[] args) {
         try {
             File file = new File("src/database.txt");
             Scanner scan = new Scanner(file);
-            Map<String, Integer> map = new HashMap<>();
+            map = new HashMap<>();
             LinkedList<Transaction> linkedList = new LinkedList<>();
             while (scan.hasNextLine()) {
                 String line = scan.nextLine();
